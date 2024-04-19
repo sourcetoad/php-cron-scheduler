@@ -144,6 +144,12 @@ class Job
     private $outputMode;
 
     /**
+     * @var bool
+     */
+    private $customWhenOverlapping = false;
+
+
+    /**
      * Create a new Job instance.
      *
      * @param  string|callable  $command
@@ -216,6 +222,9 @@ class Job
      */
     public function isOverlapping()
     {
+        if ($this->customWhenOverlapping) {
+            return call_user_func($this->whenOverlapping);
+        }
         return $this->lockFile &&
                file_exists($this->lockFile) &&
                call_user_func($this->whenOverlapping, filemtime($this->lockFile)) === false;
@@ -276,6 +285,17 @@ class Job
             };
         }
 
+        return $this;
+    }
+
+    /**
+     * @param callable $whenOverlapping
+     * @return $this
+     */
+    public function customOnlyOne(callable $whenOverlapping)
+    {
+        $this->whenOverlapping = $whenOverlapping;
+        $this->customWhenOverlapping = true;
         return $this;
     }
 

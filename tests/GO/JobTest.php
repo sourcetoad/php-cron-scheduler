@@ -414,6 +414,15 @@ class JobTest extends TestCase
             $job2Result === $job2->getOutput());
     }
 
+    public function testCustomOnlyOne()
+    {
+        $job = new Job('ls');
+        $job->customOnlyOne(function() {
+            return true;
+        });
+        $this->assertTrue($job->isOverlapping());
+    }
+
     public function testThenMethodShouldPassReturnCode()
     {
         $command_success = PHP_BINARY . ' ' . __DIR__ . '/../test_job.php';
